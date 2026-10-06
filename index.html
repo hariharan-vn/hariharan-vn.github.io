@@ -1,0 +1,444 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Hariharan VN</title>
+<meta name="description" content="Hariharan VN — Gameplay Engineer, Unreal Engine. Gameplay systems, tools and plugins, performance.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one editorial column; hero carries an engine-style "stat unit" readout; career drawn as profiler tracks */
+:root{
+  --bg:#eef0f3; --surface:#ffffff; --fg:#151a22; --muted:#5a6473; --line:#d5dae2;
+  --accent:#c2620a; --accent-soft:#f6e3cf; --track:#e3e7ed;
+  --display:"Chakra Petch","Arial Narrow",system-ui,sans-serif;
+  --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#12161d; --surface:#1a2029; --fg:#e7ebf1; --muted:#97a1b0; --line:#2b333f;
+  --accent:#f0913a; --accent-soft:#3a2a1b; --track:#222a35; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12161d; --surface:#1a2029; --fg:#e7ebf1; --muted:#97a1b0; --line:#2b333f;
+  --accent:#f0913a; --accent-soft:#3a2a1b; --track:#222a35; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.6;margin:0}
+a{color:inherit}
+a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+.wrap{max-width:1040px;margin:0 auto;padding-inline:24px}
+@media (max-width:480px){.wrap{padding-inline:16px}}
+
+/* nav */
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+nav .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:12px}
+.mark{font-family:var(--display);font-weight:700;letter-spacing:.04em;text-decoration:none}
+.mark span{color:var(--accent)}
+nav ul{display:flex;gap:20px;list-style:none;margin:0;padding:0;font-size:14px}
+nav ul a{text-decoration:none;color:var(--muted)}
+nav ul a:hover{color:var(--fg)}
+@media (max-width:560px){nav ul{gap:14px;font-size:13px}nav ul li.hide-sm{display:none}}
+
+/* hero */
+.hero{padding-block:72px 56px;display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:48px;align-items:end}
+@media (max-width:820px){.hero{grid-template-columns:1fr;padding-block:48px 40px;gap:32px}}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin:0 0 16px}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(44px,8vw,84px);line-height:.95;letter-spacing:-.01em;margin:0 0 20px;text-wrap:balance}
+.lede{font-size:clamp(17px,2vw,19px);color:var(--muted);max-width:56ch;margin:0 0 28px}
+.lede strong{color:var(--fg);font-weight:600}
+.ctas{display:flex;flex-wrap:wrap;gap:12px}
+.btn{font:600 14px var(--body);display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border-radius:6px;text-decoration:none;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+:root[data-theme="dark"] .btn.primary{color:#1a1208}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn.primary{color:#1a1208}}
+.btn:hover{border-color:var(--accent)}
+
+/* stat unit readout */
+.statunit{font-family:var(--mono);font-size:13px;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:16px 18px;font-variant-numeric:tabular-nums}
+.statunit .cmd{color:var(--muted);margin-bottom:10px}
+.statunit .cmd b{color:var(--accent);font-weight:500}
+.statunit dl{display:grid;grid-template-columns:auto 1fr;gap:6px 18px;margin:0}
+.statunit dt{color:var(--muted)}
+.statunit dd{margin:0;text-align:right;color:var(--fg)}
+.statunit dd em{font-style:normal;color:var(--accent)}
+
+/* sections */
+section{padding-block:56px;border-top:1px solid var(--line)}
+.sec-head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:28px}
+h2{font-family:var(--display);font-weight:600;font-size:clamp(26px,3.6vw,34px);margin:0;letter-spacing:.01em}
+.sec-note{font-family:var(--mono);font-size:12px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+
+/* highlights */
+.figures{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+@media (max-width:720px){.figures{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.fig{background:var(--surface);padding:20px 18px}
+.fig b{display:block;font-family:var(--display);font-size:clamp(30px,4vw,40px);line-height:1;color:var(--accent);font-variant-numeric:tabular-nums}
+.fig span{display:block;margin-top:8px;font-size:14px;color:var(--muted)}
+
+/* work */
+.work{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+@media (max-width:760px){.work{grid-template-columns:1fr}}
+.case{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:22px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.case.feature{grid-column:1/-1;border-color:var(--accent);background:linear-gradient(135deg,var(--accent-soft),var(--surface) 55%)}
+.case-meta{font-family:var(--mono);font-size:12px;color:var(--muted);letter-spacing:.04em}
+.case h3{font-family:var(--display);font-weight:600;font-size:22px;line-height:1.2;margin:0}
+.case p{margin:0;color:var(--muted)}
+.case p strong{color:var(--fg);font-weight:600}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:auto;padding-top:6px}
+.tags span{font-family:var(--mono);font-size:11.5px;padding:3px 8px;border-radius:4px;background:var(--track);color:var(--fg)}
+
+/* timeline as profiler tracks */
+.ruler{display:grid;grid-template-columns:repeat(8,1fr);font-family:var(--mono);font-size:11px;color:var(--muted);margin:0 0 8px;padding-left:0}
+.ruler span{border-left:1px solid var(--line);padding-left:4px}
+.tracks{display:flex;flex-direction:column;gap:6px;margin-bottom:28px}
+.trk{position:relative;height:30px;background:var(--track);border-radius:4px;overflow:hidden}
+.trk i{position:absolute;top:0;bottom:0;border-radius:4px;background:var(--accent);opacity:.9;display:flex;align-items:center;padding-inline:10px;font:500 12px var(--mono);font-style:normal;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.trk i.dim{opacity:.55}
+.roles{display:flex;flex-direction:column;gap:0}
+.role{display:grid;grid-template-columns:200px minmax(0,1fr);gap:24px;padding-block:24px;border-top:1px solid var(--line)}
+.role:first-child{border-top:0;padding-top:4px}
+@media (max-width:680px){.role{grid-template-columns:1fr;gap:8px}}
+.role .when{font-family:var(--mono);font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.role .when b{display:block;color:var(--accent);font-weight:500}
+.role h3{font-family:var(--display);font-weight:600;font-size:20px;margin:0 0 2px}
+.role .org{color:var(--muted);margin:0 0 10px;font-size:15px}
+.role ul{margin:0;padding-left:18px;max-width:68ch}
+.role li{margin-bottom:6px}
+
+/* skills */
+.skills{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px}
+@media (max-width:760px){.skills{grid-template-columns:1fr 1fr}}
+@media (max-width:480px){.skills{grid-template-columns:1fr}}
+.skills h3{font-family:var(--mono);font-size:12px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin:0 0 10px}
+.skills ul{list-style:none;margin:0;padding:0}
+.skills li{padding:5px 0;border-bottom:1px dashed var(--line)}
+
+/* contact */
+.contact{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:40px;align-items:start}
+@media (max-width:760px){.contact{grid-template-columns:1fr;gap:24px}}
+.contact p{color:var(--muted);max-width:52ch;margin:12px 0 0}
+.links{display:flex;flex-direction:column;gap:10px}
+.linkrow{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px 14px;min-width:0}
+.linkrow .k{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.linkrow .v{font-size:15px;overflow-wrap:anywhere;user-select:all}
+.linkrow a.v{text-decoration:none}
+.linkrow a.v:hover{color:var(--accent)}
+.copy{font:500 12px var(--mono);background:none;border:1px solid var(--line);color:var(--fg);border-radius:4px;padding:5px 9px;cursor:pointer;flex-shrink:0}
+.copy:hover{border-color:var(--accent)}
+footer{padding-block:28px 40px;border-top:1px solid var(--line);font-family:var(--mono);font-size:12px;color:var(--muted)}
+
+/* personal projects */
+.projects{display:flex;flex-direction:column;gap:28px}
+.proj{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:28px;align-items:start;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:20px}
+@media (max-width:760px){.proj{grid-template-columns:1fr;gap:18px}}
+.player{position:relative;aspect-ratio:16/9;max-width:100%;border-radius:6px;overflow:hidden;background:var(--track);border:1px solid var(--line)}
+.player video,.player iframe,.player img{position:absolute;inset:0;width:100%;height:100%;border:0;object-fit:cover;display:block}
+.player button.play{position:absolute;inset:0;width:100%;height:100%;border:0;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.player button.play span{width:64px;height:64px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;box-shadow:0 6px 20px rgba(0,0,0,.25)}
+.player button.play span::after{content:"";border-left:18px solid #fff;border-top:11px solid transparent;border-bottom:11px solid transparent;margin-left:5px}
+.player .empty{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;font-family:var(--mono);font-size:12px;color:var(--muted);text-align:center;padding:16px;background:repeating-linear-gradient(45deg,var(--track) 0 12px,var(--surface) 12px 24px)}
+.proj-body{display:flex;flex-direction:column;gap:10px;min-width:0}
+.proj-body h3{font-family:var(--display);font-weight:600;font-size:22px;line-height:1.2;margin:0}
+.proj-body p{margin:0;color:var(--muted)}
+.proj-body ul{margin:0;padding-left:18px;color:var(--fg)}
+.proj-body li{margin-bottom:4px}
+.proj-links{display:flex;flex-wrap:wrap;gap:8px;padding-top:4px}
+.proj-links a{font:500 13px var(--body);text-decoration:none;padding:7px 12px;border:1px solid var(--line);border-radius:6px}
+.proj-links a:hover{border-color:var(--accent);color:var(--accent)}
+.badge{align-self:flex-start;font:500 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:4px;background:var(--accent-soft);color:var(--accent)}
+
+@media (prefers-reduced-motion:no-preference){
+  .trk i{animation:grow .9s cubic-bezier(.2,.7,.2,1) both}
+  @keyframes grow{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+}
+</style>
+</head>
+<body>
+
+<nav aria-label="Primary">
+  <div class="wrap">
+    <a class="mark" href="#top">Hariharan VN<span>.</span></a>
+    <ul>
+      <li><a href="#work">Work</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li class="hide-sm"><a href="#experience">Experience</a></li>
+      <li class="hide-sm"><a href="#skills">Skills</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main id="top">
+  <div class="wrap">
+    <header class="hero">
+      <div>
+        <p class="eyebrow">Gameplay Engineer · Unreal Engine</p>
+        <h1>Hariharan VN</h1>
+        <p class="lede">I build <strong>gameplay systems, tools and plugins</strong> in Unreal and Unity, across mobile, hyper-casual and defense training simulation. Currently at <strong>Lightfury Games</strong>, Bangalore.</p>
+        <div class="ctas">
+          <a class="btn primary" href="#work">See my work</a>
+          <a class="btn" href="https://www.linkedin.com/in/hariharan-vn-65808981" target="_blank" rel="noopener">LinkedIn ↗</a>
+        </div>
+      </div>
+      <div class="statunit" aria-label="Career summary in the style of an engine stat readout">
+        <div class="cmd">&gt; <b>stat</b> career</div>
+        <dl>
+          <dt>Experience</dt><dd><em>6+</em> yrs</dd>
+          <dt>Engines</dt><dd>Unreal · Unity</dd>
+          <dt>Languages</dt><dd>C++ · C# · BP</dd>
+          <dt>Shipped downloads</dt><dd><em>1M+</em></dd>
+          <dt>Pool memory saved</dt><dd><em>−20%</em></dd>
+          <dt>Prototypes</dt><dd>15+</dd>
+        </dl>
+      </div>
+    </header>
+  </div>
+
+  <section aria-labelledby="h-highlights">
+    <div class="wrap">
+      <div class="sec-head"><h2 id="h-highlights">Highlights</h2></div>
+      <div class="figures">
+        <div class="fig"><b>1M+</b><span>Downloads on Song Beat, Android</span></div>
+        <div class="fig"><b>20%</b><span>Memory cut with a templated Object Pool Manager</span></div>
+        <div class="fig"><b>3</b><span>Engineers led at Zen Technologies</span></div>
+        <div class="fig"><b>2023</b><span>Key Contributor Award, Zen Technologies</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="work" aria-labelledby="h-work">
+    <div class="wrap">
+      <div class="sec-head"><h2 id="h-work">Selected work</h2><span class="sec-note">Systems I designed and built</span></div>
+      <div class="work">
+        <article class="case feature">
+          <div class="case-meta">Lightfury Games · 2025 – present</div>
+          <h3>Bowler data flow, batter locomotion and cross-platform controls</h3>
+          <p>Architected the <strong>bowler data-flow pipeline from client to server</strong>: how player input is captured on-device, transmitted, and processed server-side. Worked on <strong>Advanced Locomotion for batter movement</strong>, and designed a control system that handles <strong>touch and console</strong> through Enhanced Input.</p>
+          <div class="tags"><span>Unreal</span><span>C++</span><span>Advanced Locomotion</span><span>Enhanced Input</span><span>Client–server</span></div>
+        </article>
+        <article class="case">
+          <div class="case-meta">Lightfury Games</div>
+          <h3>Mobile UI and game-state flow</h3>
+          <p>Built modular, platform-agnostic UI screens with <strong>CommonUI</strong>, and drove gameplay flow with <strong>State Trees</strong> and Gameplay Systems to handle complex state transitions.</p>
+          <div class="tags"><span>CommonUI</span><span>State Trees</span><span>Mobile</span></div>
+        </article>
+        <article class="case">
+          <div class="case-meta">Zen Technologies · Gun simulator</div>
+          <h3>Reusable tactical AI plugin</h3>
+          <p>Designed an AI plugin that powers realistic, battle-like training scenarios. Built for <strong>portability</strong>, so it drops into other projects with minimal setup.</p>
+          <div class="tags"><span>Unreal</span><span>C++</span><span>Plugin</span><span>AI</span></div>
+        </article>
+        <article class="case">
+          <div class="case-meta">Zen Technologies · Driving simulator</div>
+          <h3>Templated Object Pool Manager</h3>
+          <p>Pooled real-time decal spawning during driving sequences, <strong>cutting memory use by 20%</strong> and removing frame hitches.</p>
+          <div class="tags"><span>C++ templates</span><span>Performance</span><span>Unreal Insights</span></div>
+        </article>
+        <article class="case">
+          <div class="case-meta">Zen Technologies · Naval simulation</div>
+          <h3>Moving ship battle simulation</h3>
+          <p>Characters run on a <strong>hidden static ship</strong> and their movement is mapped onto the moving vessel, avoiding the cost of animating characters on a dynamic object.</p>
+          <div class="tags"><span>Unreal</span><span>Simulation</span><span>Optimization</span></div>
+        </article>
+        <article class="case">
+          <div class="case-meta">Hungama Gameshastra · 2021 – 2022</div>
+          <h3>Song Beat</h3>
+          <p>Core gameplay for a rhythm game that passed <strong>1M+ downloads</strong> on Android. Tiles spawn from real-time server data, with interaction-triggered particles and SFX.</p>
+          <div class="tags"><span>Unity</span><span>C#</span><span>Android</span></div>
+        </article>
+        <article class="case">
+          <div class="case-meta">Taninty Game Studio · 2019 – 2021</div>
+          <h3>15+ hyper-casual prototypes</h3>
+          <p>Rapid prototypes for leading publishers including <strong>Lion Studios</strong>. Enemy AI with Behavior Trees and a wide range of mechanics under tight timelines.</p>
+          <div class="tags"><span>Unity</span><span>Behavior Trees</span><span>Rapid prototyping</span></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="projects" aria-labelledby="h-projects">
+    <div class="wrap">
+      <div class="sec-head"><h2 id="h-projects">Personal projects</h2><span class="sec-note">Built on my own time</span></div>
+      <div class="projects" id="project-list"></div>
+    </div>
+  </section>
+
+  <section id="experience" aria-labelledby="h-exp">
+    <div class="wrap">
+      <div class="sec-head"><h2 id="h-exp">Experience</h2><span class="sec-note">2019 → now</span></div>
+
+      <div aria-hidden="true">
+        <div class="ruler"><span>'19</span><span>'20</span><span>'21</span><span>'22</span><span>'23</span><span>'24</span><span>'25</span><span>'26</span></div>
+        <div class="tracks">
+          <div class="trk"><i class="dim" style="left:0;width:25%">Taninty · Unity</i></div>
+          <div class="trk"><i class="dim" style="left:25%;width:12.5%">Hungama · Unity</i></div>
+          <div class="trk"><i style="left:37.5%;width:37.5%">Zen Technologies · Unreal</i></div>
+          <div class="trk"><i style="left:75%;width:25%">Lightfury · Unreal</i></div>
+        </div>
+      </div>
+
+      <div class="roles">
+        <div class="role">
+          <div class="when"><b>2025 – Present</b>Bangalore</div>
+          <div>
+            <h3>Gameplay Engineer (Engineer 2)</h3>
+            <p class="org">Lightfury Games</p>
+            <ul>
+              <li>Architected the bowler data-flow pipeline from client to server.</li>
+              <li>Designed cross-platform touch and console controls with Enhanced Input.</li>
+              <li>Built modular, scalable mobile UI screens with CommonUI.</li>
+              <li>Implemented game-state management with State Trees and Gameplay Systems.</li>
+              <li>Worked on Advanced Locomotion for batter movement.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="role">
+          <div class="when"><b>2022 – 2025</b>Hyderabad</div>
+          <div>
+            <h3>Unreal Developer</h3>
+            <p class="org">Zen Technologies</p>
+            <ul>
+              <li>Designed a reusable, portable AI plugin for a gun-simulator training product.</li>
+              <li>Guided a team of 3, coordinating module ownership and delivery.</li>
+              <li>Built a templated Object Pool Manager that cut memory use by 20%.</li>
+              <li>Engineered a moving ship battle simulation with a decoupled character approach.</li>
+              <li>Received the 2023 Key Contributor Award.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="role">
+          <div class="when"><b>2021 – 2022</b>Hyderabad</div>
+          <div>
+            <h3>Gameplay Programmer / Unity Developer</h3>
+            <p class="org">Hungama Gameshastra</p>
+            <ul>
+              <li>Developed core gameplay for Song Beat, 1M+ downloads on Android.</li>
+              <li>Spawned tile data dynamically from real-time server data.</li>
+              <li>Integrated interaction-triggered particle effects and SFX.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="role">
+          <div class="when"><b>2019 – 2021</b>Chennai</div>
+          <div>
+            <h3>Junior Gameplay Programmer / Unity Developer</h3>
+            <p class="org">Taninty Game Studio</p>
+            <ul>
+              <li>Prototyped 15+ hyper-casual games for publishers including Lion Studios.</li>
+              <li>Programmed enemy AI with Behavior Trees.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="skills" aria-labelledby="h-skills">
+    <div class="wrap">
+      <div class="sec-head"><h2 id="h-skills">Toolkit</h2></div>
+      <div class="skills">
+        <div><h3>Engines &amp; languages</h3><ul><li>Unreal Engine</li><li>Unity</li><li>C++</li><li>C#</li><li>Blueprint</li></ul></div>
+        <div><h3>Unreal systems</h3><ul><li>CommonUI</li><li>State Trees</li><li>Enhanced Input</li><li>Behavior Trees</li><li>Advanced Locomotion</li></ul></div>
+        <div><h3>Specialties</h3><ul><li>Gameplay programming</li><li>Client–server data flow</li><li>Tools &amp; plugin development</li><li>Performance optimization</li></ul></div>
+        <div><h3>Profiling</h3><ul><li>Unreal Insights</li><li>stat commands</li></ul></div>
+        <div><h3>Platforms</h3><ul><li>Android</li><li>PC / Windows</li><li>Mobile</li></ul></div>
+        <div><h3>Source control</h3><ul><li>Perforce</li><li>Git</li></ul></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact" aria-labelledby="h-contact">
+    <div class="wrap contact">
+      <div>
+        <h2 id="h-contact">Let's build something</h2>
+        <p>Open to gameplay engineering roles and collaborations. Email is the fastest way to reach me.</p>
+      </div>
+      <div class="links">
+        <div class="linkrow">
+          <div style="min-width:0"><div class="k">Email</div><div class="v" id="email">mailhariharanonthis@gmail.com</div></div>
+          <button class="copy" id="copy-email" type="button">Copy</button>
+        </div>
+        <div class="linkrow">
+          <div style="min-width:0"><div class="k">LinkedIn</div><a class="v" href="https://www.linkedin.com/in/hariharan-vn-65808981" target="_blank" rel="noopener">hariharan-vn-65808981 ↗</a></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer><div class="wrap">© 2026 Hariharan VN · Built for the web, no engine required.</div></footer>
+
+<script>
+/* ===== PERSONAL PROJECTS — edit this list =====
+   video: { youtube: "VIDEO_ID" }   e.g. the part after v= in a YouTube link
+      or: { file: "videos/my-game.mp4", poster: "images/my-game.jpg" }  (files in your repo)
+      or: null for no video yet
+   links: [{ label: "Play on itch.io", url: "https://..." }, ...]          */
+var PROJECTS = [
+  {
+    title: "TableTennisVR",
+    meta: "VR · Solo · In development",
+    summary: "A physics-driven table tennis game for VR, inspired by Eleven Table Tennis. I'm building it in my free time to explore realistic ball physics and networked multiplayer.",
+    points: [
+      "Physics-based ball simulation for realistic bounce, spin and paddle response.",
+      "Predicted ball path that the AI opponent uses for collision detection and shot reaction.",
+      "In progress: dedicated server hosting to test multiplayer.",
+      "Next: client-side prediction and server-side reconciliation for responsive online rallies."
+    ],
+    tags: ["VR", "Physics", "Game AI", "Multiplayer", "Dedicated server"],
+    video: { youtube: "DLyy6Jdmy7o" },
+    links: []
+  }
+];
+
+(function(){
+  var list=document.getElementById('project-list');
+  function el(tag,cls,text){var e=document.createElement(tag);if(cls)e.className=cls;if(text!=null)e.textContent=text;return e}
+  function player(v,title){
+    var box=el('div','player');
+    if(!v){var e=el('div','empty');e.appendChild(el('div',null,'Gameplay video'));e.appendChild(el('div',null,'coming soon'));box.appendChild(e);return box}
+    if(v.file){var vid=document.createElement('video');vid.controls=true;vid.preload='metadata';vid.src=v.file;if(v.poster)vid.poster=v.poster;vid.setAttribute('aria-label',title+' gameplay video');box.appendChild(vid);return box}
+    if(v.youtube){
+      var img=document.createElement('img');img.alt=title+' gameplay video thumbnail';img.loading='lazy';
+      img.src='https://img.youtube.com/vi/'+encodeURIComponent(v.youtube)+'/hqdefault.jpg';
+      img.onerror=function(){img.remove()};
+      var b=el('button','play');b.type='button';b.setAttribute('aria-label','Play '+title+' gameplay video');b.appendChild(el('span'));
+      b.addEventListener('click',function(){
+        var f=document.createElement('iframe');
+        f.src='https://www.youtube-nocookie.com/embed/'+encodeURIComponent(v.youtube)+'?autoplay=1&rel=0';
+        f.title=title+' gameplay video';f.allow='autoplay; encrypted-media; picture-in-picture; fullscreen';f.allowFullscreen=true;
+        box.innerHTML='';box.appendChild(f);
+      });
+      box.appendChild(img);box.appendChild(b);return box;
+    }
+    return box;
+  }
+  PROJECTS.forEach(function(p){
+    var card=el('article','proj');
+    card.appendChild(player(p.video,p.title));
+    var body=el('div','proj-body');
+    if(p.example)body.appendChild(el('span','badge','Example · replace me'));
+    if(p.meta)body.appendChild(el('div','case-meta',p.meta));
+    body.appendChild(el('h3',null,p.title));
+    if(p.summary)body.appendChild(el('p',null,p.summary));
+    if(p.points&&p.points.length){var ul=el('ul');p.points.forEach(function(t){ul.appendChild(el('li',null,t))});body.appendChild(ul)}
+    var vlinks=(p.links||[]).slice();
+    if(p.video&&p.video.youtube)vlinks.push({label:'Watch on YouTube ↗',url:'https://www.youtube.com/watch?v='+p.video.youtube});
+    if(vlinks.length){var lk=el('div','proj-links');vlinks.forEach(function(l){var a=el('a',null,l.label);a.href=l.url;a.target='_blank';a.rel='noopener';lk.appendChild(a)});body.appendChild(lk)}
+    if(p.tags&&p.tags.length){var tg=el('div','tags');p.tags.forEach(function(t){tg.appendChild(el('span',null,t))});body.appendChild(tg)}
+    card.appendChild(body);list.appendChild(card);
+  });
+})();
+</script>
+<script>
+document.getElementById('copy-email').addEventListener('click', function(){
+  var btn=this, text=document.getElementById('email').textContent.trim();
+  function done(){btn.textContent='Copied';setTimeout(function(){btn.textContent='Copy'},1600)}
+  function fallback(){var r=document.createRange();r.selectNodeContents(document.getElementById('email'));var s=getSelection();s.removeAllRanges();s.addRange(r);btn.textContent='Selected'}
+  try{navigator.clipboard.writeText(text).then(done,fallback)}catch(e){fallback()}
+});
+</script>
+</body>
+</html>
